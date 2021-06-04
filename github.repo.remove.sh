@@ -12,19 +12,19 @@ sleep="2"
 
 OPTIND=1
 
-while getopts "t:n:o:h" opt; do
+while getopts "t:o:n:h" opt; do
   case ${opt} in
     t)
       token="${OPTARG}"
       ;;
-    n)
-      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
-      ;;
     o)
       org="${OPTARG}"
       ;;
+    n)
+      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
+      ;;
     h|*)
-      echo "-t '[token]' -n '[name]' -o '[org]'"
+      echo "-t '[token]' -o '[org]' -n '[name]'"
       exit 2
       ;;
   esac

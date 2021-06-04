@@ -12,40 +12,22 @@ sleep="2"
 
 OPTIND=1
 
-while getopts "t:o:n:d:x:l:ripwh" opt; do
+while getopts "t:o:n:p:h" opt; do
   case ${opt} in
     t)
       token="${OPTARG}"
       ;;
     o)
-      org="${OPTARG}"
+      owner="${OPTARG}"
       ;;
     n)
       name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
       ;;
-    d)
-      description="${OPTARG}"
-      ;;
-    x)
-      homepage="${OPTARG}"
-      ;;
-    l)
-      license="${OPTARG}"
-      ;;
-    r)
-      private=1
-      ;;
-    i)
-      set_issues=1
-      ;;
     p)
-      set_projects=1
-      ;;
-    w)
-      set_wiki=1
+      topic="${OPTARG}"; IFS=';' read -ra topic <<< "${topic}"
       ;;
     h|*)
-      echo "-t '[token]' -o '[org]' -n '[name]' -d '[description]' -x '[homepage]' -l '[license]' -r (private) -i (issues) -p (projects) -w (wiki)"
+      echo "-t '[token]' -o '[owner]' -n '[name]' -d '[description]' -x '[homepage]' -r (private) -i (issues) -p (projects) -w (wiki)"
       exit 2
       ;;
   esac
@@ -53,35 +35,23 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#name[@]} )) || [[ -z "${org}" ]] && exit 1
+(( ! ${#name[@]} )) && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-[[ -n "${private}" ]] && private="true" || private="false"
-[[ -n "${set_issues}" ]] && has_issues="true" || has_issues="false"
-[[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
-[[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
-
 for i in "${name[@]}"; do
   echo "" && echo "--- Open: ${i}"
 
-  ${curl}                                     \
-  -X POST                                     \
-  -H "Authorization: token ${token}"          \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/orgs/${org}/repos"  \
+  ${curl}                                                 \
+  -X PUT                                                  \
+  -H "Authorization: token ${token}"                      \
+  -H "Accept: application/vnd.github.mercy-preview+json"  \
+  "https://api.github.com/repos/${owner}/${i}/topics"     \
   -d @- << EOF
 {
-  "name": "${i}",
-  "description": "${description}",
-  "homepage": "${homepage}",
-  "private": ${private},
-  "has_issues": ${has_issues},
-  "has_projects": ${has_projects},
-  "has_wiki": ${has_wiki},
-  "license_template": "${license}"
+  "names": ["${topic[@]@Q}"]
 }
 EOF
 

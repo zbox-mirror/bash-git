@@ -18,7 +18,7 @@ while getopts "t:o:n:d:x:l:ripwh" opt; do
       token="${OPTARG}"
       ;;
     o)
-      org="${OPTARG}"
+      owner="${OPTARG}"
       ;;
     n)
       name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
@@ -28,9 +28,6 @@ while getopts "t:o:n:d:x:l:ripwh" opt; do
       ;;
     x)
       homepage="${OPTARG}"
-      ;;
-    l)
-      license="${OPTARG}"
       ;;
     r)
       private=1
@@ -45,7 +42,7 @@ while getopts "t:o:n:d:x:l:ripwh" opt; do
       set_wiki=1
       ;;
     h|*)
-      echo "-t '[token]' -o '[org]' -n '[name]' -d '[description]' -x '[homepage]' -l '[license]' -r (private) -i (issues) -p (projects) -w (wiki)"
+      echo "-t '[token]'  -o '[owner]' -n '[name]' -d '[description]' -x '[homepage]'-r (private) -i (issues) -p (projects) -w (wiki)"
       exit 2
       ;;
   esac
@@ -53,7 +50,7 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#name[@]} )) || [[ -z "${org}" ]] && exit 1
+(( ! ${#name[@]} )) || [[ -z "${owner}" ]] && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
@@ -67,11 +64,11 @@ shift $(( OPTIND - 1 ))
 for i in "${name[@]}"; do
   echo "" && echo "--- Open: ${i}"
 
-  ${curl}                                     \
-  -X POST                                     \
-  -H "Authorization: token ${token}"          \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/orgs/${org}/repos"  \
+  ${curl}                                       \
+  -X PATCH                                      \
+  -H "Authorization: token ${token}"            \
+  -H "Accept: application/vnd.github.v3+json"   \
+  "https://api.github.com/repos/${owner}/repo"  \
   -d @- << EOF
 {
   "name": "${i}",
@@ -80,8 +77,7 @@ for i in "${name[@]}"; do
   "private": ${private},
   "has_issues": ${has_issues},
   "has_projects": ${has_projects},
-  "has_wiki": ${has_wiki},
-  "license_template": "${license}"
+  "has_wiki": ${has_wiki}
 }
 EOF
 
