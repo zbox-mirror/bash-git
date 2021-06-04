@@ -39,7 +39,6 @@ run.git.push() {
 
 run.git.push.all() {
   for i in *; do
-    [[ -e "${i}" ]] || break
     if [[ -d "${i}/.git" ]]; then
       cd "${i}" && run.git.push "$@" && cd ..
     fi
@@ -54,11 +53,7 @@ run.git.push.tag() {
   tags=$( git tag --list )
   changes=$( git status --porcelain )
 
-  if [[ -z "${changes}" ]]; then
-    count="0"
-  else
-    count="1"
-  fi
+  [[ -z "${changes}" ]] && count="0" || count="1"
 
   if [[ -z "${1}" ]]; then
     if [[ -z "${tags}" ]]; then
@@ -82,12 +77,7 @@ run.git.push.tag() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push.page() {
-  if [[ -z "${1}" ]]; then
-    branch="page-stable"
-  else
-    branch="${1}"
-  fi
-
+  [[ -z "${1}" ]] && branch="page-stable" || branch="${1}"
   run.git.push "$@" && git checkout master && git merge "${branch}" && git push && git checkout "${branch}"
 }
 
@@ -96,11 +86,6 @@ run.git.push.page() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push.cdn() {
-  if [[ -z "${1}" ]]; then
-    branch="cdn-stable"
-  else
-    branch="${1}"
-  fi
-
+  [[ -z "${1}" ]] && branch="cdn-stable" || branch="${1}"
   run.git.push "$@" && git checkout master && git merge "${branch}" && git push && git checkout "${branch}"
 }
