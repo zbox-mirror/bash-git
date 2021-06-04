@@ -27,9 +27,9 @@ run.git.push() {
   commit="$*"
 
   echo ""
-  echo "--- Pushing ${name}"
+  echo "--- Pushing '${name}'"
   git add . && git commit -a -m "${timestamp}" -m "${commit}" && git push
-  echo "--- Finished ${name}"
+  echo "--- Finished '${name}'"
   echo ""
 }
 
