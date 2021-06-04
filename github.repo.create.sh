@@ -18,16 +18,16 @@ while getopts "t:n:d:x:o:ipwh" opt; do
       token="${OPTARG}"
       ;;
     n)
-      project_name="${OPTARG}"; IFS=';' read -ra project_name <<< "${project_name}"
+      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
       ;;
     d)
-      project_description="${OPTARG}"
+      description="${OPTARG}"
       ;;
     x)
-      project_homepage="${OPTARG}"
+      homepage="${OPTARG}"
       ;;
     o)
-      project_org="${OPTARG}"
+      org="${OPTARG}"
       ;;
     i)
       set_issues=1
@@ -39,15 +39,15 @@ while getopts "t:n:d:x:o:ipwh" opt; do
       set_wiki=1
       ;;
     h|*)
-      echo "-t [token] -n [project_name] -d [project_description] -x [project_homepage] -o [project_org] -i -p -w"
+      echo "-t [token] -n [name] -d [description] -x [homepage] -o [org] -i -p -w"
       exit 2
       ;;
   esac
 done
 
-shift "$(( OPTIND - 1 ))"
+shift $(( OPTIND - 1 ))
 
-(( ! ${#project_name[@]} )) || [[ -z "${project_org}" ]] && exit 1
+(( ! ${#name[@]} )) || [[ -z "${org}" ]] && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
@@ -57,19 +57,19 @@ shift "$(( OPTIND - 1 ))"
 [[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
 [[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
 
-for i in "${project_name[@]}"; do
+for i in "${name[@]}"; do
   echo "" && echo "--- Open: ${i}"
 
-  ${curl}                                             \
-  -X POST                                             \
-  -H "Authorization: token ${token}"                  \
-  -H "Accept: application/vnd.github.v3+json"         \
-  "https://api.github.com/orgs/${project_org}/repos"  \
+  ${curl}                                     \
+  -X POST                                     \
+  -H "Authorization: token ${token}"          \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/orgs/${org}/repos"  \
   -d @- << EOF
 {
   "name": "${i}",
-  "description": "${project_description}",
-  "homepage": "${project_homepage}",
+  "description": "${description}",
+  "homepage": "${homepage}",
   "has_issues": ${has_issues},
   "has_projects": ${has_projects},
   "has_wiki": ${has_wiki}

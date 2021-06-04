@@ -18,34 +18,34 @@ while getopts "t:n:o:h" opt; do
       token="${OPTARG}"
       ;;
     n)
-      project_name="${OPTARG}"; IFS=';' read -ra project_name <<< "${project_name}"
+      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
       ;;
     o)
-      project_org="${OPTARG}"
+      org="${OPTARG}"
       ;;
     h|*)
-      echo "-t [token] -n [project_name] -o [project_org]"
+      echo "-t [token] -n [name] -o [org]"
       exit 2
       ;;
   esac
 done
 
-shift "$(( OPTIND - 1 ))"
+shift $(( OPTIND - 1 ))
 
-(( ! ${#project_name[@]} )) && exit 1
+(( ! ${#name[@]} )) && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-for i in "${project_name[@]}"; do
+for i in "${name[@]}"; do
   echo "" && echo "--- Open: ${i}"
 
   ${curl}                                       \
   -X DELETE                                     \
   -H "Authorization: token ${token}"            \
   -H "Accept: application/vnd.github.v3+json"   \
-  "https://api.github.com/repos/${project_org}/${i}"
+  "https://api.github.com/repos/${org}/${i}"
 
   echo "" && echo "--- Done: ${i}" && echo ""
 
