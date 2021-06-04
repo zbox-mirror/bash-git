@@ -12,7 +12,7 @@ sleep="2"
 
 OPTIND=1
 
-while getopts "t:n:d:x:o:ipwh" opt; do
+while getopts "t:n:d:x:o:l:ripwh" opt; do
   case ${opt} in
     t)
       token="${OPTARG}"
@@ -29,6 +29,12 @@ while getopts "t:n:d:x:o:ipwh" opt; do
     o)
       org="${OPTARG}"
       ;;
+    l)
+      license="${OPTARG}"
+      ;;
+    r)
+      private=1
+      ;;
     i)
       set_issues=1
       ;;
@@ -39,7 +45,7 @@ while getopts "t:n:d:x:o:ipwh" opt; do
       set_wiki=1
       ;;
     h|*)
-      echo "-t [token] -n [name] -d [description] -x [homepage] -o [org] -i -p -w"
+      echo "-t '[token]' -n '[name]' -d '[description]' -x '[homepage]' -o '[org]' -l '[license]' -r (private) -i (issues) -p (projects) -w (wiki)"
       exit 2
       ;;
   esac
@@ -53,6 +59,7 @@ shift $(( OPTIND - 1 ))
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
+[[ -n "${private}" ]] && private="true" || private="false"
 [[ -n "${set_issues}" ]] && has_issues="true" || has_issues="false"
 [[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
 [[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
@@ -70,9 +77,11 @@ for i in "${name[@]}"; do
   "name": "${i}",
   "description": "${description}",
   "homepage": "${homepage}",
+  "private": ${private},
   "has_issues": ${has_issues},
   "has_projects": ${has_projects},
-  "has_wiki": ${has_wiki}
+  "has_wiki": ${has_wiki},
+  "license_template": "${license}"
 }
 EOF
 
