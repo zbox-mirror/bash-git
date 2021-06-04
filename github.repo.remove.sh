@@ -24,7 +24,7 @@ while getopts "t:n:o:h" opt; do
       org="${OPTARG}"
       ;;
     h|*)
-      echo "-t [token] -n [name] -o [org]"
+      echo "-t '[token]' -n '[name]' -o '[org]'"
       exit 2
       ;;
   esac
