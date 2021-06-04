@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-(( ${EUID} == 0 )) &&
+(( EUID == 0 )) &&
   { echo >&2 "This script should not be run as root!"; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -22,7 +22,7 @@ ext.git.build.version() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push() {
-  name=$( basename ${PWD} )
+  name=$( basename "${PWD}" )
   timestamp=$( ext.git.timestamp )
   commit="$*"
 
@@ -38,9 +38,10 @@ run.git.push() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push.all() {
-  for i in $( ls ); do
-    if [[ -d ${i}/.git ]]; then
-      cd ${i} && run.git.push && cd ..
+  for i in *; do
+    [[ -e "${i}" ]] || break
+    if [[ -d "${i}/.git" ]]; then
+      cd "${i}" && run.git.push "$@" && cd ..
     fi
   done
 }
@@ -49,7 +50,7 @@ run.git.push.all() {
 # Git push version.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-run.git.push.version() {
+run.git.push.tag() {
   tags=$( git tag --list )
   changes=$( git status --porcelain )
 
@@ -63,17 +64,17 @@ run.git.push.version() {
     if [[ -z "${tags}" ]]; then
       version="1.0.0"
     else
-      tag=( $( git describe --abbrev=0 --tags | tr '.' ' ' ) )
+      tag=( "$( git describe --abbrev=0 --tags | tr '.' ' ' )" )
       major=${tag[1]}
       minor=${tag[2]}
       patch=${tag[3]}
-      version="${major}.${minor}.$(( ${patch} + ${count} ))"
+      version="${major}.${minor}.(( ${patch} + ${count} ))"
     fi
   else
     version="${1}"
   fi
 
-  run.git.push && git tag -a ${version} -m "Version ${version}" && git push origin ${version}
+  run.git.push "$@" && git tag -a "${version}" -m "Version ${version}" && git push origin "${version}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -87,7 +88,7 @@ run.git.push.page() {
     branch="${1}"
   fi
 
-  run.git.push && git checkout master && git merge ${branch} && git push && git checkout ${branch}
+  run.git.push "$@" && git checkout master && git merge "${branch}" && git push && git checkout "${branch}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -101,5 +102,5 @@ run.git.push.cdn() {
     branch="${1}"
   fi
 
-  run.git.push && git checkout master && git merge ${branch} && git push && git checkout ${branch}
+  run.git.push "$@" && git checkout master && git merge "${branch}" && git push && git checkout "${branch}"
 }
