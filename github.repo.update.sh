@@ -42,7 +42,7 @@ while getopts "t:o:n:d:x:l:ripwh" opt; do
       set_wiki=1
       ;;
     h|*)
-      echo "-t '[token]'  -o '[owner]' -n '[name]' -d '[description]' -x '[homepage]'-r (private) -i (issues) -p (projects) -w (wiki)"
+      echo "-t '[token]'  -o '[owner]' -n '[name_1;name_2;name_3]' -d '[description]' -x '[homepage]'-r (private) -i (issues) -p (projects) -w (wiki)"
       exit 2
       ;;
   esac

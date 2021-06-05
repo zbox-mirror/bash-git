@@ -24,7 +24,7 @@ while getopts "t:o:n:h" opt; do
       name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
       ;;
     h|*)
-      echo "-t '[token]' -o '[org]' -n '[name]'"
+      echo "-t '[token]' -o '[org]' -n '[name_1;name_2;name_3]'"
       exit 2
       ;;
   esac

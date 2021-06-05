@@ -27,7 +27,7 @@ while getopts "t:o:n:p:h" opt; do
       topic="${OPTARG}"; IFS=';' read -ra topic <<< "${topic}"
       ;;
     h|*)
-      echo "-t '[token]' -o '[owner]' -n '[name]' -d '[description]' -x '[homepage]' -r (private) -i (issues) -p (projects) -w (wiki)"
+      echo "-t '[token]' -o '[owner]' -n '[name_1;name_2;name_3]' -p '[topic_1;topic_2;topic_3]'"
       exit 2
       ;;
   esac
