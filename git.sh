@@ -28,7 +28,9 @@ run.git.push() {
 
   echo ""
   echo "--- Pushing '${name}'"
-  git add . && git commit -a -m "${timestamp}" -m "${commit}" && git push
+  git add .                                           \
+    && git commit -a -m "${timestamp}" -m "${commit}" \
+    && git push
   echo "--- Finished '${name}'"
   echo ""
 }
@@ -40,9 +42,9 @@ run.git.push() {
 run.git.push.all() {
   for i in *; do
     if [[ -d "${i}/.git" ]]; then
-      cd "${i}"             \
-      && run.git.push "$@"  \
-      && cd ..
+      cd "${i}"               \
+        && run.git.push "$@"  \
+        && cd ..
     fi
   done
 }
@@ -71,9 +73,9 @@ run.git.push.tag() {
     version="${1}"
   fi
 
-  run.git.push "$@"                                   \
-  && git tag -a "${version}" -m "Version ${version}"  \
-  && git push origin "${version}"
+  run.git.push "$@"                                     \
+    && git tag -a "${version}" -m "Version ${version}"  \
+    && git push origin "${version}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -82,11 +84,11 @@ run.git.push.tag() {
 
 run.git.push.page() {
   [[ -z "${1}" ]] && branch="page-stable" || branch="${1}"
-  run.git.push "$@"           \
-  && git checkout master      \
-  && git merge "${branch}"    \
-  && git push                 \
-  && git checkout "${branch}"
+  run.git.push "$@"             \
+    && git checkout main        \
+    && git merge "${branch}"    \
+    && git push                 \
+    && git checkout "${branch}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -95,9 +97,9 @@ run.git.push.page() {
 
 run.git.push.cdn() {
   [[ -z "${1}" ]] && branch="cdn-stable" || branch="${1}"
-  run.git.push "$@"           \
-  && git checkout master      \
-  && git merge "${branch}"    \
-  && git push                 \
-  && git checkout "${branch}"
+  run.git.push "$@"             \
+    && git checkout main        \
+    && git merge "${branch}"    \
+    && git push                 \
+    && git checkout "${branch}"
 }
