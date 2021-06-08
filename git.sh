@@ -7,13 +7,17 @@
 # EXT scripts.
 # -------------------------------------------------------------------------------------------------------------------- #
 
+git=$( command -v git )
+date=$( command -v date )
+tr=$( command -v tr )
+
 ext.git.timestamp() {
-  timestamp=$( date -u '+%Y-%m-%d %T' )
+  timestamp=$( ${date} -u '+%Y-%m-%d %T' )
   echo "${timestamp}"
 }
 
 ext.git.build.version() {
-  version=$( date -u '+%Y%m%d%H%M%S' )
+  version=$( ${date} -u '+%Y%m%d%H%M%S' )
   echo "${version}"
 }
 
@@ -28,9 +32,9 @@ run.git.push() {
 
   echo ""
   echo "--- Pushing '${name}'"
-  git add .                                           \
-    && git commit -a -m "${timestamp}" -m "${commit}" \
-    && git push
+  ${git} add .                                            \
+    && ${git} commit -a -m "${timestamp}" -m "${commit}"  \
+    && ${git} push
   echo "--- Finished '${name}'"
   echo ""
 }
@@ -54,8 +58,8 @@ run.git.push.all() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push.tag() {
-  tags=$( git tag --list )
-  changes=$( git status --porcelain )
+  tags=$( ${git} tag --list )
+  changes=$( ${git} status --porcelain )
 
   [[ -z "${changes}" ]] && count="0" || count="1"
 
@@ -63,7 +67,7 @@ run.git.push.tag() {
     if [[ -z "${tags}" ]]; then
       version="1.0.0"
     else
-      tag=( "$( git describe --abbrev=0 --tags | tr '.' ' ' )" )
+      tag=( "$( ${git} describe --abbrev=0 --tags | ${tr} '.' ' ' )" )
       major=${tag[1]}
       minor=${tag[2]}
       patch=${tag[3]}
@@ -73,9 +77,9 @@ run.git.push.tag() {
     version="${1}"
   fi
 
-  run.git.push "$@"                                     \
-    && git tag -a "${version}" -m "Version ${version}"  \
-    && git push origin "${version}"
+  run.git.push "$@"                                       \
+    && ${git} tag -a "${version}" -m "Version ${version}" \
+    && ${git} push origin "${version}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -84,11 +88,11 @@ run.git.push.tag() {
 
 run.git.push.page() {
   [[ -z "${1}" ]] && branch="page-stable" || branch="${1}"
-  run.git.push "$@"             \
-    && git checkout main        \
-    && git merge "${branch}"    \
-    && git push                 \
-    && git checkout "${branch}"
+  run.git.push "$@"                 \
+    && ${git} checkout main         \
+    && ${git} merge "${branch}"     \
+    && ${git} push                  \
+    && ${git} checkout "${branch}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -97,9 +101,9 @@ run.git.push.page() {
 
 run.git.push.cdn() {
   [[ -z "${1}" ]] && branch="cdn-stable" || branch="${1}"
-  run.git.push "$@"             \
-    && git checkout main        \
-    && git merge "${branch}"    \
-    && git push                 \
-    && git checkout "${branch}"
+  run.git.push "$@"                 \
+    && ${git} checkout main         \
+    && ${git} merge "${branch}"     \
+    && ${git} push                  \
+    && ${git} checkout "${branch}"
 }
