@@ -7,9 +7,6 @@
 # Get options.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-curl=$( which curl )
-sleep="2"
-
 OPTIND=1
 
 while getopts "t:o:n:d:x:l:ripwh" opt; do
@@ -59,13 +56,16 @@ shift $(( OPTIND - 1 ))
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
+curl=$( command -v curl )
+sleep="2"
+
 [[ -n "${private}" ]] && private="true" || private="false"
 [[ -n "${set_issues}" ]] && has_issues="true" || has_issues="false"
 [[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
 [[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
 
 for i in "${name[@]}"; do
-  echo "" && echo "--- Open: ${i}"
+  echo "" && echo "--- Open: '${i}'"
 
   ${curl}                                     \
   -X POST                                     \
@@ -85,7 +85,7 @@ for i in "${name[@]}"; do
 }
 EOF
 
-  echo "" && echo "--- Done: ${i}" && echo ""
+  echo "" && echo "--- Done: '${i}'" && echo ""
 
   sleep ${sleep}
 done

@@ -7,9 +7,6 @@
 # Get options.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-curl=$( which curl )
-sleep="2"
-
 OPTIND=1
 
 while getopts "t:o:n:h" opt; do
@@ -38,8 +35,11 @@ shift $(( OPTIND - 1 ))
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
+curl=$( command -v curl )
+sleep="2"
+
 for i in "${name[@]}"; do
-  echo "" && echo "--- Open: ${i}"
+  echo "" && echo "--- Open: '${i}'"
 
   ${curl}                                       \
   -X DELETE                                     \
@@ -47,7 +47,7 @@ for i in "${name[@]}"; do
   -H "Accept: application/vnd.github.v3+json"   \
   "https://api.github.com/repos/${org}/${i}"
 
-  echo "" && echo "--- Done: ${i}" && echo ""
+  echo "" && echo "--- Done: '${i}'" && echo ""
 
   sleep ${sleep}
 done
