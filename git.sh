@@ -11,14 +11,12 @@ git=$( command -v git )
 date=$( command -v date )
 tr=$( command -v tr )
 
-ext.git.timestamp() {
-  timestamp=$( ${date} -u '+%Y-%m-%d %T' )
-  echo "${timestamp}"
+_timestamp() {
+  ${date} -u '+%Y-%m-%d %T'
 }
 
-ext.git.build.version() {
-  version=$( ${date} -u '+%Y%m%d%H%M%S' )
-  echo "${version}"
+_build_version() {
+  ${date} -u '+%Y%m%d%H%M%S'
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -27,13 +25,13 @@ ext.git.build.version() {
 
 run.git.push() {
   name=$( basename "${PWD}" )
-  timestamp=$( ext.git.timestamp )
+  ts=$( _timestamp )
   commit="$*"
 
   echo ""
   echo "--- Pushing '${name}'"
-  ${git} add .                                            \
-    && ${git} commit -a -m "${timestamp}" -m "${commit}"  \
+  ${git} add .                                    \
+    && ${git} commit -a -m "${ts}" -m "${commit}" \
     && ${git} push
   echo "--- Finished '${name}'"
   echo ""
