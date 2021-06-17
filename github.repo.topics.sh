@@ -52,7 +52,7 @@ for i in "${name[@]}"; do
   "https://api.github.com/repos/${owner}/${i}/topics"     \
   -d @- << EOF
 {
-  "names": [ echo ${topics:1} ]
+  "names": [ ${topics:1} ]
 }
 EOF
 
