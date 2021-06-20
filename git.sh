@@ -7,9 +7,9 @@
 # EXT scripts.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-git=$( command -v git )
-date=$( command -v date )
-tr=$( command -v tr )
+git="$( command -v git )"
+date="$( command -v date )"
+tr="$( command -v tr )"
 
 _timestamp() {
   ${date} -u '+%Y-%m-%d %T'
