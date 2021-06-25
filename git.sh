@@ -25,12 +25,12 @@ _build_version() {
 
 run.git.push() {
   name=$( basename "${PWD}" )
-  ts=$( _timestamp )
+  ts="$( _timestamp )"
   commit="$*"
 
   echo ""
   echo "--- Pushing '${name}'"
-  ${git} add .                                    \
+  ${git} add . \
     && ${git} commit -a -m "${ts}" -m "${commit}" \
     && ${git} push
   echo "--- Finished '${name}'"
@@ -44,9 +44,9 @@ run.git.push() {
 run.git.push.all() {
   for i in *; do
     if [[ -d "${i}/.git" ]]; then
-      cd "${i}"               \
-        && run.git.push "$@"  \
-        && cd ..
+      pushd "${i}" \
+        && run.git.push "$@" \
+        && popd || exit 1
     fi
   done
 }
@@ -56,8 +56,8 @@ run.git.push.all() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 run.git.push.tag() {
-  tags=$( ${git} tag --list )
-  changes=$( ${git} status --porcelain )
+  tags="$( ${git} tag --list )"
+  changes="$( ${git} status --porcelain )"
 
   [[ -z "${changes}" ]] && count="0" || count="1"
 
@@ -86,10 +86,10 @@ run.git.push.tag() {
 
 run.git.push.page() {
   [[ -z "${1}" ]] && branch="page-stable" || branch="${1}"
-  run.git.push "$@"                 \
-    && ${git} checkout main         \
-    && ${git} merge "${branch}"     \
-    && ${git} push                  \
+  run.git.push "$@" \
+    && ${git} checkout main \
+    && ${git} merge "${branch}" \
+    && ${git} push \
     && ${git} checkout "${branch}"
 }
 
@@ -99,9 +99,9 @@ run.git.push.page() {
 
 run.git.push.cdn() {
   [[ -z "${1}" ]] && branch="cdn-stable" || branch="${1}"
-  run.git.push "$@"                 \
-    && ${git} checkout main         \
-    && ${git} merge "${branch}"     \
-    && ${git} push                  \
+  run.git.push "$@" \
+    && ${git} checkout main \
+    && ${git} merge "${branch}" \
+    && ${git} push \
     && ${git} checkout "${branch}"
 }
