@@ -3,7 +3,14 @@
 (( EUID == 0 )) && { echo >&2 "This script should not be run as root!"; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Get options.
+# CONFIGURATION.
+# -------------------------------------------------------------------------------------------------------------------- #
+
+curl="$( command -v curl )"
+sleep="2"
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# OPTIONS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 OPTIND=1
@@ -52,23 +59,19 @@ shift $(( OPTIND - 1 ))
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-curl="$( command -v curl )"
-sleep="2"
-
 [[ -n "${private}" ]] && private="true" || private="false"
 [[ -n "${set_issues}" ]] && has_issues="true" || has_issues="false"
 [[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
 [[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
 
 for i in "${name[@]}"; do
-  echo "" && echo "--- Open: '${i}'"
+  echo "" && echo "--- OPEN: '${i}'"
 
-  ${curl}                                       \
-  -X PATCH                                      \
-  -H "Authorization: token ${token}"            \
-  -H "Accept: application/vnd.github.v3+json"   \
-  "https://api.github.com/repos/${owner}/repo"  \
-  -d @- << EOF
+  ${curl} -X PATCH \
+    -H "Authorization: token ${token}" \
+    -H "Accept: application/vnd.github.v3+json" \
+    "https://api.github.com/repos/${owner}/repo" \
+    -d @- << EOF
 {
   "name": "${i}",
   "description": "${description}",
@@ -80,7 +83,7 @@ for i in "${name[@]}"; do
 }
 EOF
 
-  echo "" && echo "--- Done: '${i}'" && echo ""
+  echo "" && echo "--- DONE: '${i}'" && echo ""
 
   sleep ${sleep}
 done
