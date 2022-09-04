@@ -68,9 +68,9 @@ for i in "${name[@]}"; do
   echo "" && echo "--- OPEN: '${i}'"
 
   ${curl} -X PATCH \
-    -H "Authorization: token ${token}" \
-    -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/${owner}/repo" \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/${owner}/${i}" \
     -d @- << EOF
 {
   "name": "${i}",

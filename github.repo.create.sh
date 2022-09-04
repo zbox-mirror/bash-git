@@ -71,8 +71,8 @@ for i in "${name[@]}"; do
   echo "" && echo "--- OPEN: '${i}'"
 
   ${curl} -X POST \
-    -H "Authorization: token ${token}" \
-    -H "Accept: application/vnd.github.v3+json" \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
     "https://api.github.com/orgs/${org}/repos" \
     -d @- << EOF
 {
