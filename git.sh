@@ -36,11 +36,11 @@ run.git.push() {
   commit="$*"
 
   echo ""
-  echo "--- Pushing '${name}'"
+  echo "--- OPEN: '${name}'"
   ${git} add . \
     && ${git} commit -a -m "${ts}" -m "${commit}" \
     && ${git} push
-  echo "--- Finished '${name}'"
+  echo "--- DONE: '${name}'"
   echo ""
 }
 
