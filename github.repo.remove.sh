@@ -9,13 +9,21 @@
 curl="$( command -v curl )"
 sleep="2"
 
+# Help.
+read -r -d '' help <<- EOF
+Options:
+  -x 'TOKEN'                              GitHub user token.
+  -o 'OWNER'                              Repository owner (organization).
+  -r 'REPO_1;REPO_2;REPO_3'               Repository name array.
+EOF
+
 # -------------------------------------------------------------------------------------------------------------------- #
 # OPTIONS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 OPTIND=1
 
-while getopts "t:o:n:h" opt; do
+while getopts "t:o:r:h" opt; do
   case ${opt} in
     t)
       token="${OPTARG}"
@@ -23,11 +31,11 @@ while getopts "t:o:n:h" opt; do
     o)
       org="${OPTARG}"
       ;;
-    n)
-      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
+    r)
+      repos="${OPTARG}"; IFS=';' read -ra repos <<< "${repos}"
       ;;
     h|*)
-      echo "-t '[token]' -o '[org]' -n '[name_1;name_2;name_3]'"
+      echo "${help}"
       exit 2
       ;;
   esac
@@ -35,21 +43,21 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#name[@]} )) && exit 1
+(( ! ${#repos[@]} )) && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-for i in "${name[@]}"; do
-  echo "" && echo "--- OPEN: '${i}'"
+for repo in "${repos[@]}"; do
+  echo "" && echo "--- OPEN: '${repo}'"
 
   ${curl} -X DELETE \
     -H "Authorization: Bearer ${token}" \
     -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/${org}/${i}"
+    "https://api.github.com/repos/${org}/${repo}"
 
-  echo "" && echo "--- DONE: '${i}'" && echo ""
+  echo "" && echo "--- DONE: '${repo}'" && echo ""
 
   sleep ${sleep}
 done

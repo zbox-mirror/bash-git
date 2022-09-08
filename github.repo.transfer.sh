@@ -12,9 +12,10 @@ sleep="2"
 # Help.
 read -r -d '' help <<- EOF
 Options:
-  -x 'TOKEN'                              Packagist token.
-  -u 'USER'                               Packagist user name.
-  -r '[URL1;URL2;URL3]'                   Repository URL array.
+  -x 'TOKEN'                              GitHub user token.
+  -o 'OWNER_OLD'                          OLD repository owner (organization).
+  -n 'OWNER_NEW'                          NEW repository owner (organization).
+  -r 'REPO_1;REPO_2;REPO_3'               Repository name array.
 EOF
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -23,13 +24,16 @@ EOF
 
 OPTIND=1
 
-while getopts "x:u:r:h" opt; do
+while getopts "x:o:n:r:h" opt; do
   case ${opt} in
     x)
       token="${OPTARG}"
       ;;
-    u)
-      user="${OPTARG}"
+    o)
+      owner_old="${OPTARG}"
+      ;;
+    n)
+      owner_new="${OPTARG}"
       ;;
     r)
       repos="${OPTARG}"; IFS=';' read -ra repos <<< "${repos}"
@@ -43,7 +47,7 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#repos[@]} )) || [[ -z "${user}" ]] && exit 1
+(( ! ${#repos[@]} )) || [[ -z "${owner_old}" ]] || [[ -z "${owner_new}" ]] && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
@@ -53,13 +57,12 @@ for repo in "${repos[@]}"; do
   echo "" && echo "--- OPEN: '${repo}'"
 
   ${curl} -X POST \
-    -H "Content-Type: application/json" \
-    "https://packagist.org/api/create-package?username=${user}&apiToken=${token}" \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/${owner_old}/${repo}/transfer" \
     -d @- << EOF
 {
-  "repository": {
-    "url": "${repo}"
-  }
+  "new_owner": "${owner_new}"
 }
 EOF
 

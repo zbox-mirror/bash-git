@@ -9,28 +9,37 @@
 curl="$( command -v curl )"
 sleep="2"
 
+# Help.
+read -r -d '' help <<- EOF
+Options:
+  -x 'TOKEN'                              GitHub user token.
+  -o 'OWNER'                              Repository owner (organization).
+  -r 'REPO_1;REPO_2;REPO_3'               Repository name array.
+  -t 'TOPIC_1;TOPIC_2;TOPIC_3'            Topic name array.
+EOF
+
 # -------------------------------------------------------------------------------------------------------------------- #
 # OPTIONS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 OPTIND=1
 
-while getopts "t:o:n:p:h" opt; do
+while getopts "x:o:r:t:h" opt; do
   case ${opt} in
-    t)
+    x)
       token="${OPTARG}"
       ;;
     o)
       owner="${OPTARG}"
       ;;
-    n)
-      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
+    r)
+      repos="${OPTARG}"; IFS=';' read -ra repos <<< "${repos}"
       ;;
-    p)
-      topic="${OPTARG}"; IFS=';' read -ra topic <<< "${topic}"
+    t)
+      topics="${OPTARG}"; IFS=';' read -ra topics <<< "${topic}"
       ;;
     h|*)
-      echo "-t '[token]' -o '[owner]' -n '[name_1;name_2;name_3]' -p '[topic_1;topic_2;topic_3]'"
+      echo "${help}"
       exit 2
       ;;
   esac
@@ -38,28 +47,28 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#name[@]} )) && exit 1
+(( ! ${#repos[@]} )) && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-topics=$( printf ',"%s"' "${topic[@]}" )
+topic=$( printf ',"%s"' "${topics[@]}" )
 
-for i in "${name[@]}"; do
-  echo "" && echo "--- OPEN: '${i}'"
+for repo in "${repos[@]}"; do
+  echo "" && echo "--- OPEN: '${repo}'"
 
   ${curl} -X PUT \
     -H "Authorization: token ${token}" \
     -H "Accept: application/vnd.github.mercy-preview+json" \
-    "https://api.github.com/repos/${owner}/${i}/topics" \
+    "https://api.github.com/repos/${owner}/${repo}/topics" \
     -d @- << EOF
 {
-  "names": [ ${topics:1} ]
+  "names": [ ${topic:1} ]
 }
 EOF
 
-  echo "" && echo "--- DONE: '${i}'" && echo ""
+  echo "" && echo "--- DONE: '${repo}'" && echo ""
 
   sleep ${sleep}
 done

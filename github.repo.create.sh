@@ -9,46 +9,65 @@
 curl="$( command -v curl )"
 sleep="2"
 
+# Help.
+read -r -d '' help <<- EOF
+Options:
+  -x 'TOKEN'                              GitHub user token.
+  -o 'OWNER'                              Repository owner (organization).
+  -r 'REPO_1;REPO_2;REPO_3'               Repository name array.
+  -d 'DESCRIPTION'                        Repository description.
+  -s 'https://example.org/'               Repository site URL.
+  -l 'mit'                                Open source license template. For example, "mit" or "mpl-2.0".
+  -p                                      Set private repository.
+  -i                                      Has issues.
+  -j                                      Has projects.
+  -w                                      Has WIKI.
+  -u (auto_init)
+EOF
+
 # -------------------------------------------------------------------------------------------------------------------- #
 # OPTIONS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 OPTIND=1
 
-while getopts "t:o:n:d:x:l:ripwh" opt; do
+while getopts "x:o:r:d:s:l:pijwuh" opt; do
   case ${opt} in
-    t)
+    x)
       token="${OPTARG}"
       ;;
     o)
       org="${OPTARG}"
       ;;
-    n)
-      name="${OPTARG}"; IFS=';' read -ra name <<< "${name}"
+    r)
+      repos="${OPTARG}"; IFS=';' read -ra repos <<< "${repos}"
       ;;
     d)
       description="${OPTARG}"
       ;;
-    x)
+    s)
       homepage="${OPTARG}"
       ;;
     l)
       license="${OPTARG}"
       ;;
-    r)
+    p)
       private=1
       ;;
     i)
-      set_issues=1
+      has_issues=1
       ;;
-    p)
-      set_projects=1
+    j)
+      has_projects=1
       ;;
     w)
-      set_wiki=1
+      has_wiki=1
+      ;;
+    u)
+      auto_init=1
       ;;
     h|*)
-      echo "-t '[token]' -o '[org]' -n '[name_1;name_2;name_3]' -d '[description]' -x '[homepage]' -l '[license]' -r (private) -i (issues) -p (projects) -w (wiki)"
+      echo "${help}"
       exit 2
       ;;
   esac
@@ -56,19 +75,20 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#name[@]} )) || [[ -z "${org}" ]] && exit 1
+(( ! ${#repos[@]} )) || [[ -z "${org}" ]] && exit 1
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 [[ -n "${private}" ]] && private="true" || private="false"
-[[ -n "${set_issues}" ]] && has_issues="true" || has_issues="false"
-[[ -n "${set_projects}" ]] && has_projects="true" || has_projects="false"
-[[ -n "${set_wiki}" ]] && has_wiki="true" || has_wiki="false"
+[[ -n "${has_issues}" ]] && has_issues="true" || has_issues="false"
+[[ -n "${has_projects}" ]] && has_projects="true" || has_projects="false"
+[[ -n "${has_wiki}" ]] && has_wiki="true" || has_wiki="false"
+[[ -n "${auto_init}" ]] && auto_init="true" || auto_init="false"
 
-for i in "${name[@]}"; do
-  echo "" && echo "--- OPEN: '${i}'"
+for repo in "${repos[@]}"; do
+  echo "" && echo "--- OPEN: '${repo}'"
 
   ${curl} -X POST \
     -H "Authorization: Bearer ${token}" \
@@ -76,18 +96,19 @@ for i in "${name[@]}"; do
     "https://api.github.com/orgs/${org}/repos" \
     -d @- << EOF
 {
-  "name": "${i}",
+  "name": "${repo}",
   "description": "${description}",
   "homepage": "${homepage}",
   "private": ${private},
   "has_issues": ${has_issues},
   "has_projects": ${has_projects},
   "has_wiki": ${has_wiki},
+  "auto_init": ${auto_init},
   "license_template": "${license}"
 }
 EOF
 
-  echo "" && echo "--- DONE: '${i}'" && echo ""
+  echo "" && echo "--- DONE: '${repo}'" && echo ""
 
   sleep ${sleep}
 done
