@@ -19,7 +19,7 @@ jobs:
     name: "Mirror / GitHub"
     env:
       dst_domain: "${{ github.server_url }}"
-      dst_owner: "${{ env.dst_pfx }}${{ github.repository_owner }}${{ env.dst_sfx }}"
+      dst_owner: "${{ github.repository_owner }}-mirror"
     steps:
       - run: |
           echo "repo_name=$( echo '${{ env.src_repo }}' | awk -F '/' '{ print $2 }' )" >> $GITHUB_ENV
@@ -50,7 +50,7 @@ jobs:
     name: "Mirror / GitLab"
     env:
       dst_domain: "https://gitlab.com"
-      dst_owner: "${{ env.dst_pfx }}${{ github.repository_owner }}${{ env.dst_sfx }}"
+      dst_owner: "${{ github.repository_owner }}-mirror"
       dst_nsID: '57669711'
     steps:
       - run: |
@@ -82,7 +82,7 @@ jobs:
     name: "Mirror / Codeberg"
     env:
       dst_domain: "https://codeberg.org"
-      dst_owner: "${{ env.dst_pfx }}${{ github.repository_owner }}${{ env.dst_sfx }}"
+      dst_owner: "${{ github.repository_owner }}-mirror"
     steps:
       - run: |
           echo "repo_name=$( echo '${{ env.src_repo }}' | awk -F '/' '{ print $2 }' )" >> $GITHUB_ENV
