@@ -104,35 +104,3 @@ jobs:
           dst_repo: "${{ env.dst_domain }}/${{ env.dst_owner }}/${{ env.repo_name }}.git"
           dst_user: "${{ secrets.BOT_CODEBERG_NAME }}"
           dst_token: "${{ secrets.BOT_CODEBERG_TOKEN }}"
-
-  # ------------------------------------------------------------------------------------------------------------------ #
-  # Gitea.
-  # ------------------------------------------------------------------------------------------------------------------ #
-
-  mirror_gitea:
-    runs-on: ubuntu-latest
-    name: "Mirror / Gitea"
-    env:
-      dst_domain: "https://gitea.com"
-      dst_owner: "${{ github.repository_owner }}-mirror"
-    steps:
-      - run: |
-          echo "repo_name=$( echo '${{ env.src_repo }}' | awk -F '/' '{ print $2 }' )" >> $GITHUB_ENV
-        shell: bash
-      - run: |
-          curl -X POST \
-          -H 'Authorization: token ${{ secrets.BOT_GITEA_TOKEN }}' \
-          -H 'Accept: application/json' \
-          -H 'Content-Type: application/json' \
-          '${{ env.dst_domain }}/api/v1/orgs/${{ env.dst_owner }}/repos' \
-          -d '{"name":"${{ env.repo_name }}"}' \
-          -s -o '/dev/null'
-        shell: bash
-      - uses: ghastore/mirror@main
-        with:
-          src_repo: "${{ env.src_domain }}/${{ env.src_repo }}.git"
-          src_user: "${{ secrets.BOT_GITHUB_NAME }}"
-          src_token: "${{ secrets.BOT_GITHUB_TOKEN }}"
-          dst_repo: "${{ env.dst_domain }}/${{ env.dst_owner }}/${{ env.repo_name }}.git"
-          dst_user: "${{ secrets.BOT_GITEA_NAME }}"
-          dst_token: "${{ secrets.BOT_GITEA_TOKEN }}"
